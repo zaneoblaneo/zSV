@@ -22,10 +22,10 @@ pub mod z_sv {
             }
             None
         }
-        
+
         /// Finds the first instance of `f` in `self.data`, and returns either
         /// `Some(index)`, or `None` if the string isn't contained within
-        /// `self.data`. if `f.data.len()` is 0, we will always return 
+        /// `self.data`. if `f.data.len()` is 0, we will always return
         /// `Some(0)`
         pub fn find_string(&self, f: &ZSV) -> Option<usize> {
             if f.data.len() > self.data.len() {
@@ -38,8 +38,7 @@ pub mod z_sv {
             let f_char_array_cache: Vec<char> = f.data.chars().collect();
             'outter: for a in 0..self.data.len() {
                 for b in 0..f.data.len() {
-                    if data_char_array_cache[a+b] != 
-                        f_char_array_cache[b] {
+                    if data_char_array_cache[a + b] != f_char_array_cache[b] {
                         continue 'outter;
                     }
                 }
@@ -47,7 +46,7 @@ pub mod z_sv {
             }
             None
         }
-        
+
         /// Finds the last instance of `f` in `self.data`, and returns either
         /// `Some(index)`, or `None` if the character doesn't exist within
         /// `self.data`.
@@ -59,15 +58,14 @@ pub mod z_sv {
                 } else {
                     indx -= 1;
                 }
-
             }
             None
         }
 
         /// Finds the last instance of `f` in `self.data`, and returns either
         /// `Some(index)`, or `None` if the string isn't contained within
-        /// `self.data`. if `f.data.len()` is 0, we will always return 
-        /// `Some(self.data.len()-1)`. if `self.data.len()` is 0, we will 
+        /// `self.data`. if `f.data.len()` is 0, we will always return
+        /// `Some(self.data.len()-1)`. if `self.data.len()` is 0, we will
         /// return None.
         pub fn rfind_string(&self, f: &ZSV) -> Option<usize> {
             if f.data.len() > self.data.len() {
@@ -77,14 +75,13 @@ pub mod z_sv {
                 return None;
             }
             if f.data.len() == 0 {
-                return Some(self.data.len()-1);
+                return Some(self.data.len() - 1);
             }
             let data_char_array_cache: Vec<char> = self.data.chars().collect();
             let f_char_array_cache: Vec<char> = f.data.chars().collect();
             'outter: for a in (0..=(self.data.len() - f.data.len())).rev() {
                 for b in 0..f.data.len() {
-                    if data_char_array_cache[a+b] != 
-                        f_char_array_cache[b] {
+                    if data_char_array_cache[a + b] != f_char_array_cache[b] {
                         continue 'outter;
                     }
                 }
@@ -93,8 +90,8 @@ pub mod z_sv {
             None
         }
 
-        /// Splits a ZSV into a tuple of `(a: Option<ZSV>, b: Option<ZSV>)` 
-        /// where `Some(a)` is all data left of the first instance of the 
+        /// Splits a ZSV into a tuple of `(a: Option<ZSV>, b: Option<ZSV>)`
+        /// where `Some(a)` is all data left of the first instance of the
         /// seperator character `s`, and `Some(b)` is all data to the right
         /// of and including the seperator character `s`.
         pub fn split_char(&self, s: char) -> (Option<ZSV>, Option<ZSV>) {
@@ -110,8 +107,8 @@ pub mod z_sv {
             }
         }
 
-        /// Splits a ZSV into a tuple of `(a: Option<ZSV>, b: Option<ZSV>)` 
-        /// where `Some(a)` is all data left of the index: `indx`, and 
+        /// Splits a ZSV into a tuple of `(a: Option<ZSV>, b: Option<ZSV>)`
+        /// where `Some(a)` is all data left of the index: `indx`, and
         /// `Some(b)` is all data to the right of and including `indx`
         pub fn split_index(&self, indx: usize) -> (Option<ZSV>, Option<ZSV>) {
             if indx >= self.data.len() {
@@ -132,7 +129,7 @@ pub mod z_sv {
             }
         }
 
-        /// Returns an owned copy of the `String` 
+        /// Returns an owned copy of the `String`
         pub fn as_owned_string(&self) -> String {
             return self.data.to_owned();
         }
@@ -140,22 +137,21 @@ pub mod z_sv {
 
     impl From<&str> for ZSV {
         fn from(data: &str) -> ZSV {
-           ZSV {
-               data: data.to_owned(),
-           }
+            ZSV {
+                data: data.to_owned(),
+            }
         }
     }
     impl From<String> for ZSV {
         fn from(data: String) -> ZSV {
-           ZSV {
-               data: data.clone(),
-           } 
+            ZSV { data: data.clone() }
         }
     }
     impl From<&CString> for ZSV {
         fn from(data: &CString) -> ZSV {
             ZSV {
-                data: data.to_str()
+                data: data
+                    .to_str()
                     .expect("Invalid UTF-8 provided to ZSV::From<&CString>()")
                     .to_owned(),
             }
@@ -165,15 +161,15 @@ pub mod z_sv {
 #[cfg(test)]
 mod tests {
 
-    use std::ffi::CString;
     use crate::z_sv::*;
+    use std::ffi::CString;
     #[test]
-    fn test_from_cstr() -> Result<(),()> {
+    fn test_from_cstr() -> Result<(), ()> {
         let j: CString = CString::new("Hello, world!").unwrap();
         let _f: ZSV = ZSV::from(&j);
         Ok(())
     }
-    
+
     #[test]
     fn test_from_string() -> Result<(), ()> {
         let j: String = "The Game.".to_owned();
@@ -183,7 +179,8 @@ mod tests {
 
     #[test]
     fn test_find_string() -> Result<(), ()> {
-        let corpus: ZSV = ZSV::from("Lorem ipsum dolor sit amet, consectetur 
+        let corpus: ZSV = ZSV::from(
+            "Lorem ipsum dolor sit amet, consectetur 
                                     adipiscing elit. Duis vestibulum iaculis
                                     orci ut laoreet. Nulla hendrerit sed nisl
                                     nec tempor. Curabitur vitae tempus lorem,
@@ -201,7 +198,8 @@ mod tests {
                                     odio, at tristique nibh imperdiet vitae. 
                                     Curabitur sed velit molestie leo mollis 
                                     interdum sed id nunc. Sed sagittis 
-                                    scelerisque tincidunt.");
+                                    scelerisque tincidunt.",
+        );
         let text_to_find: ZSV = ZSV::from("et");
         let loc = corpus.find_string(&text_to_find);
         if let Some(loc) = loc {
@@ -217,7 +215,8 @@ mod tests {
 
     #[test]
     fn test_rfind_string() -> Result<(), ()> {
-        let corpus: ZSV = ZSV::from("Lorem ipsum dolor sit amet, consectetur 
+        let corpus: ZSV = ZSV::from(
+            "Lorem ipsum dolor sit amet, consectetur 
                                     adipiscing elit. Duis vestibulum iaculis
                                     orci ut laoreet. Nulla hendrerit sed nisl
                                     nec tempor. Curabitur vitae tempus lorem,
@@ -235,7 +234,8 @@ mod tests {
                                     odio, at tristique nibh imperdiet vitae. 
                                     Curabitur sed velit molestie leo mollis 
                                     interdum sed id nunc. Sed sagittis 
-                                    scelerisque tincidunt.");
+                                    scelerisque tincidunt.",
+        );
         let text_to_find: ZSV = ZSV::from("et");
         let loc = corpus.rfind_string(&text_to_find);
         if let Some(loc) = loc {
