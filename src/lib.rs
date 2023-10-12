@@ -1,7 +1,4 @@
 pub mod z_sv {
-    #![allow(unreachable_code)]
-    #![allow(unused_variables)]
-    #![allow(dead_code)]
 
     use std::ffi::CString;
 
@@ -111,7 +108,6 @@ pub mod z_sv {
             } else {
                 return (Some(self.clone()), None);
             }
-            unreachable!();
         }
 
         /// Splits a ZSV into a tuple of `(a: Option<ZSV>, b: Option<ZSV>)` 
@@ -134,7 +130,6 @@ pub mod z_sv {
             } else {
                 return (Some(self.clone()), None);
             }
-            unreachable!();
         }
 
         /// Returns an owned copy of the `String` 
